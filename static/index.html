@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo Lists</title>
+    <title>Todo Lists - 多设备同步任务管理</title>
     <style>
         :root {
             --primary-color: #4CAF50;
@@ -198,6 +198,270 @@
         .btn-danger:hover {
             background-color: #d32f2f;
         }
+        
+        /* 用户认证相关样式 */
+        .auth-section {
+            background-color: var(--card-background);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        
+        .auth-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            color: var(--text-light);
+        }
+        
+        .auth-tab.active {
+            border-bottom-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        /* 用户信息区域 */
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--card-background);
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+        
+        .user-details {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .user-name {
+            font-weight: 500;
+        }
+        
+        /* 设备信息 */
+        .device-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .device-badge {
+            padding: 4px 8px;
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        
+        /* 同步状态 */
+        .sync-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--card-background);
+            padding: 10px 15px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            z-index: 1000;
+            transition: var(--transition);
+            min-width: 180px;
+        }
+        
+        .sync-status.hidden {
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+        }
+        
+        .sync-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #9e9e9e;
+        }
+        
+        .sync-indicator.syncing {
+            background-color: var(--secondary-color);
+            animation: pulse 1.5s infinite;
+        }
+        
+        .sync-indicator.synced {
+            background-color: var(--primary-color);
+        }
+        
+        .sync-indicator.error {
+            background-color: #f44336;
+        }
+        
+        @keyframes pulse {
+            0% {
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0.6;
+            }
+        }
+        
+        /* 冲突提示样式 */
+        .conflict-badge {
+            background-color: #fa8c16;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+        
+        .conflict-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--card-background);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            z-index: 2000;
+            min-width: 300px;
+            max-width: 90vw;
+        }
+        
+        .conflict-dialog.hidden {
+            display: none;
+        }
+        
+        .conflict-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .conflict-content {
+            margin-bottom: 20px;
+        }
+        
+        .conflict-versions {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .conflict-version {
+            flex: 1;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: #fafafa;
+        }
+        
+        .conflict-version-label {
+            font-weight: 500;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .conflict-version-label.local {
+            color: var(--secondary-color);
+        }
+        
+        .conflict-version-label.remote {
+            color: var(--primary-color);
+        }
+        
+        .conflict-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        /* 模态框背景 */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1500;
+            display: none;
+        }
+        
+        .modal-backdrop.active {
+            display: block;
+        }
+        
+        /* 设备管理按钮 */
+        .device-manage-btn {
+            font-size: 0.8rem;
+            padding: 5px 10px;
+        }
+        
+        /* 网络状态提示 */
+        .network-status {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ff9800;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .network-status.offline {
+            opacity: 1;
+        }
 
         .btn-sm {
             padding: 5px 10px;
@@ -370,8 +634,64 @@
     <div class="container">
         <header>
             <h1>Todo Lists</h1>
-            <p class="subtitle">简单高效的任务管理工具</p>
+            <p class="subtitle">多设备同步的任务管理工具</p>
         </header>
+        
+        <!-- 用户信息区域 -->
+        <div id="user-info" class="user-info" style="display: none;">
+            <div class="user-details">
+                <div class="user-avatar" id="user-avatar"></div>
+                <div>
+                    <div class="user-name" id="user-name"></div>
+                    <div class="device-info">
+                        <span>设备:</span>
+                        <span class="device-badge" id="device-badge"></span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <button class="btn btn-secondary btn-sm device-manage-btn" id="device-manage-btn">设备管理</button>
+                <button class="btn btn-danger btn-sm" id="logout-btn">退出登录</button>
+            </div>
+        </div>
+        
+        <!-- 认证区域 -->
+        <div id="auth-section" class="auth-section">
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-target="login-form">登录</button>
+                <button class="auth-tab" data-target="register-form">注册</button>
+            </div>
+            
+            <!-- 登录表单 -->
+            <form id="login-form" class="auth-form active">
+                <div class="form-group">
+                    <label for="login-username">用户名</label>
+                    <input type="text" id="login-username" placeholder="请输入用户名" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">密码</label>
+                    <input type="password" id="login-password" placeholder="请输入密码" required>
+                </div>
+                <button type="submit" class="btn btn-primary">登录</button>
+            </form>
+            
+            <!-- 注册表单 -->
+            <form id="register-form" class="auth-form">
+                <div class="form-group">
+                    <label for="register-username">用户名</label>
+                    <input type="text" id="register-username" placeholder="请输入用户名" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">密码</label>
+                    <input type="password" id="register-password" placeholder="请输入密码（至少6位）" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-confirm-password">确认密码</label>
+                    <input type="password" id="register-confirm-password" placeholder="请再次输入密码" required>
+                </div>
+                <button type="submit" class="btn btn-primary">注册</button>
+            </form>
+        </div>
 
         <section class="create-todo">
             <h2>添加新任务</h2>
@@ -426,7 +746,52 @@
             </div>
         </section>
     </div>
-
+    
+    <!-- 同步状态指示器 -->
+    <div id="sync-status" class="sync-status hidden">
+        <div class="sync-indicator"></div>
+        <span id="sync-message">未同步</span>
+        <span id="last-sync-time" style="font-size: 0.8rem; color: var(--text-light);">-</span>
+    </div>
+    
+    <!-- 冲突解决对话框 -->
+    <div id="conflict-dialog" class="conflict-dialog hidden">
+        <div class="conflict-header">
+            <h3>数据冲突</h3>
+            <button id="close-conflict" class="btn btn-sm">×</button>
+        </div>
+        <div class="conflict-content">
+            <p>检测到数据冲突，请选择要保留的版本：</p>
+            <div class="conflict-versions">
+                <div class="conflict-version">
+                    <div class="conflict-version-label local">本地版本</div>
+                    <div id="local-conflict-content"></div>
+                </div>
+                <div class="conflict-version">
+                    <div class="conflict-version-label remote">服务器版本</div>
+                    <div id="remote-conflict-content"></div>
+                </div>
+            </div>
+        </div>
+        <div class="conflict-actions">
+            <button id="keep-local" class="btn btn-secondary">保留本地</button>
+            <button id="keep-remote" class="btn btn-primary">保留服务器</button>
+        </div>
+    </div>
+    
+    <!-- 模态框背景 -->
+    <div id="modal-backdrop" class="modal-backdrop"></div>
+    
+    <!-- 网络状态提示 -->
+    <div id="network-status" class="network-status">
+        网络已断开，数据将在重新连接后同步
+    </div>
+    
+    <!-- 引入JavaScript模块 -->
+    <script src="js/auth.js"></script>
+    <script src="js/sync.js"></script>
+    <script src="js/todo.js"></script>
+    
     <script>
         // DOM元素
             const createForm = document.getElementById('create-form');
@@ -437,10 +802,257 @@
             const todoCategoryInput = document.getElementById('todo-category');
             const todoPriorityInput = document.getElementById('todo-priority');
             const sortSelect = document.getElementById('sort-select');
+            
+            // 认证相关元素
+            const authSection = document.getElementById('auth-section');
+            const userInfo = document.getElementById('user-info');
+            const userName = document.getElementById('user-name');
+            const userAvatar = document.getElementById('user-avatar');
+            const deviceBadge = document.getElementById('device-badge');
+            const logoutBtn = document.getElementById('logout-btn');
+            const deviceManageBtn = document.getElementById('device-manage-btn');
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            
+            // 同步状态元素
+            const syncStatus = document.getElementById('sync-status');
+            const syncIndicator = document.querySelector('.sync-indicator');
+            const syncMessage = document.getElementById('sync-message');
+            const lastSyncTime = document.getElementById('last-sync-time');
+            
+            // 冲突解决元素
+            const conflictDialog = document.getElementById('conflict-dialog');
+            const modalBackdrop = document.getElementById('modal-backdrop');
+            const closeConflict = document.getElementById('close-conflict');
+            const keepLocalBtn = document.getElementById('keep-local');
+            const keepRemoteBtn = document.getElementById('keep-remote');
+            const localConflictContent = document.getElementById('local-conflict-content');
+            const remoteConflictContent = document.getElementById('remote-conflict-content');
+            
+            // 网络状态元素
+            const networkStatus = document.getElementById('network-status');
 
         // API基础URL
         const API_BASE = 'http://localhost:8080/api';
 
+        // 初始化时显示认证表单切换
+        const authTabs = document.querySelectorAll('.auth-tab');
+        authTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // 移除所有tab的active类
+                authTabs.forEach(t => t.classList.remove('active'));
+                // 添加当前tab的active类
+                tab.classList.add('active');
+                
+                // 隐藏所有表单
+                document.querySelectorAll('.auth-form').forEach(form => {
+                    form.classList.remove('active');
+                });
+                // 显示对应表单
+                const targetForm = document.getElementById(tab.dataset.target);
+                if (targetForm) {
+                    targetForm.classList.add('active');
+                }
+            });
+        });
+        
+        // 初始化认证模块
+        const authModule = new AuthModule(API_BASE);
+        // 初始化同步模块
+        const syncModule = new SyncModule(API_BASE, authModule);
+        // 初始化Todo管理器
+        const todoManager = new TodoManager(syncModule);
+        
+        // 监听认证状态变化
+        authModule.onAuthChange(async (user) => {
+            if (user) {
+                // 登录成功，更新UI
+                authSection.style.display = 'none';
+                userInfo.style.display = 'block';
+                userName.textContent = user.username;
+                userAvatar.textContent = user.username.charAt(0).toUpperCase();
+                
+                // 获取设备信息
+                const deviceInfo = await authModule.getCurrentDevice();
+                if (deviceInfo) {
+                    deviceBadge.textContent = deviceInfo.name || '未命名设备';
+                }
+                
+                // 加载任务
+                todoManager.loadTasks();
+                
+                // 启动同步
+                syncModule.startSync();
+            } else {
+                // 登出，更新UI
+                authSection.style.display = 'block';
+                userInfo.style.display = 'none';
+                todosContainer.innerHTML = `
+                    <div class="empty-state">
+                        <h3>请先登录</h3>
+                        <p>登录后可以查看和管理您的任务</p>
+                    </div>
+                `;
+                
+                // 停止同步
+                syncModule.stopSync();
+            }
+        });
+        
+        // 监听登录表单提交
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            
+            try {
+                await authModule.login(username, password);
+                // 清空表单
+                loginForm.reset();
+                showNotification('登录成功！', 'success');
+            } catch (error) {
+                showNotification('登录失败：' + error.message, 'error');
+            }
+        });
+        
+        // 监听注册表单提交
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('register-username').value.trim();
+            const password = document.getElementById('register-password').value.trim();
+            const confirmPassword = document.getElementById('register-confirm-password').value.trim();
+            
+            if (password.length < 6) {
+                showNotification('密码长度至少为6位', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showNotification('两次输入的密码不一致', 'error');
+                return;
+            }
+            
+            try {
+                await authModule.register(username, password);
+                // 注册成功后自动登录
+                await authModule.login(username, password);
+                // 清空表单
+                registerForm.reset();
+                showNotification('注册成功！', 'success');
+            } catch (error) {
+                showNotification('注册失败：' + error.message, 'error');
+            }
+        });
+        
+        // 监听登出按钮点击
+        logoutBtn.addEventListener('click', async () => {
+            await authModule.logout();
+            showNotification('已退出登录', 'info');
+        });
+        
+        // 监听设备管理按钮点击
+        deviceManageBtn.addEventListener('click', async () => {
+            try {
+                const devices = await authModule.getDevices();
+                let devicesList = '您的设备：\n';
+                devices.forEach((device, index) => {
+                    const isCurrent = device.id === (await authModule.getCurrentDevice())?.id;
+                    devicesList += `${index + 1}. ${device.name} (${device.type}) ${isCurrent ? '[当前设备]' : ''}\n`;
+                });
+                alert(devicesList);
+            } catch (error) {
+                showNotification('获取设备列表失败：' + error.message, 'error');
+            }
+        });
+        
+        // 监听同步状态变化
+        syncModule.onSyncStatusChange((status, message, time) => {
+            syncStatus.classList.remove('hidden');
+            syncIndicator.className = 'sync-indicator';
+            
+            switch (status) {
+                case 'syncing':
+                    syncIndicator.classList.add('syncing');
+                    syncMessage.textContent = message || '正在同步...';
+                    break;
+                case 'synced':
+                    syncIndicator.classList.add('synced');
+                    syncMessage.textContent = message || '同步完成';
+                    if (time) {
+                        lastSyncTime.textContent = formatDateTime(time);
+                    }
+                    break;
+                case 'error':
+                    syncIndicator.classList.add('error');
+                    syncMessage.textContent = message || '同步失败';
+                    break;
+            }
+            
+            // 5秒后隐藏同步成功状态
+            if (status === 'synced') {
+                setTimeout(() => {
+                    syncStatus.classList.add('hidden');
+                }, 5000);
+            }
+        });
+        
+        // 监听数据冲突
+        syncModule.onConflictDetected((conflict) => {
+            // 显示冲突对话框
+            conflictDialog.classList.remove('hidden');
+            modalBackdrop.classList.add('active');
+            
+            // 显示冲突内容
+            localConflictContent.innerHTML = formatTodoForConflict(conflict.local);
+            remoteConflictContent.innerHTML = formatTodoForConflict(conflict.remote);
+            
+            // 保存当前冲突
+            syncModule.currentConflict = conflict;
+        });
+        
+        // 关闭冲突对话框
+        closeConflict.addEventListener('click', () => {
+            conflictDialog.classList.add('hidden');
+            modalBackdrop.classList.remove('active');
+        });
+        
+        // 保留本地版本
+        keepLocalBtn.addEventListener('click', async () => {
+            if (syncModule.currentConflict) {
+                await syncModule.resolveConflict('local');
+                conflictDialog.classList.add('hidden');
+                modalBackdrop.classList.remove('active');
+                showNotification('已保留本地版本', 'success');
+            }
+        });
+        
+        // 保留服务器版本
+        keepRemoteBtn.addEventListener('click', async () => {
+            if (syncModule.currentConflict) {
+                await syncModule.resolveConflict('remote');
+                conflictDialog.classList.add('hidden');
+                modalBackdrop.classList.remove('active');
+                showNotification('已保留服务器版本', 'success');
+                // 重新加载任务以显示服务器版本
+                todoManager.loadTasks();
+            }
+        });
+        
+        // 网络状态监听
+        window.addEventListener('online', () => {
+            networkStatus.classList.remove('offline');
+            if (authModule.isAuthenticated()) {
+                // 网络恢复后立即同步
+                syncModule.sync();
+            }
+        });
+        
+        window.addEventListener('offline', () => {
+            networkStatus.classList.add('offline');
+        });
+        
         // 格式化日期时间为可读格式
         function formatDateTime(dateTimeString) {
             if (!dateTimeString) return '';
@@ -465,7 +1077,30 @@
                 minute: '2-digit'
             });
         }
-
+        
+        // 为冲突显示格式化任务信息
+        function formatTodoForConflict(todo) {
+            if (!todo) return '任务不存在';
+            
+            let html = `<div><strong>名称:</strong> ${escapeHtml(todo.name || '无名称')}</div>`;
+            html += `<div><strong>描述:</strong> ${escapeHtml(todo.description || '无描述')}</div>`;
+            if (todo.deadLine) {
+                html += `<div><strong>截止时间:</strong> ${formatDateTime(todo.deadLine)}</div>`;
+            }
+            if (todo.category) {
+                html += `<div><strong>分类:</strong> ${escapeHtml(todo.category)}</div>`;
+            }
+            if (todo.priority) {
+                html += `<div><strong>优先级:</strong> ${escapeHtml(todo.priority)}</div>`;
+            }
+            html += `<div><strong>完成状态:</strong> ${todo.completed ? '已完成' : '未完成'}</div>`;
+            if (todo.updateAt) {
+                html += `<div><strong>最后更新:</strong> ${formatDateTime(todo.updateAt)}</div>`;
+            }
+            
+            return html;
+        }
+        
         // 任务排序函数
         function sortTodos(todos, sortBy) {
             const sorted = [...todos];
@@ -555,311 +1190,62 @@
             // 转换为ISO字符串并截断到秒
             return date.toISOString().slice(0, 16);
         }
-
-        // 页面加载时获取所有任务
-            document.addEventListener('DOMContentLoaded', fetchTodos);
+        
+        // 初始化应用
+        async function initApp() {
+            // 检查认证状态
+            await authModule.checkAuthStatus();
             
             // 排序选择器变化时重新排序显示
             sortSelect.addEventListener('change', () => {
-                // 重新获取任务并排序
-                fetchTodos();
+                if (authModule.isAuthenticated()) {
+                    todoManager.renderTasks();
+                }
             });
-
-        // 添加新任务
-        createForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const name = todoNameInput.value.trim();
-            const description = todoDescriptionInput.value.trim();
-
-            if (!name) return;
-
-            try {
-                const response = await fetch(`${API_BASE}/create`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
+            
+            // 添加新任务表单提交
+            createForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                if (!authModule.isAuthenticated()) {
+                    showNotification('请先登录', 'error');
+                    return;
+                }
+                
+                const name = todoNameInput.value.trim();
+                const description = todoDescriptionInput.value.trim();
+                
+                if (!name) return;
+                
+                try {
+                    const todo = {
                         name,
                         description,
                         deadline: todoDeadlineInput.value,
                         category: todoCategoryInput.value.trim(),
                         priority: todoPriorityInput.value
-                    })
-                });
-
-                if (response.ok) {
+                    };
+                    
+                    await todoManager.addTask(todo);
+                    
                     // 清空表单
                     todoNameInput.value = '';
                     todoDescriptionInput.value = '';
                     todoDeadlineInput.value = '';
                     todoCategoryInput.value = '';
                     todoPriorityInput.value = '';
-                    // 重新获取任务列表
-                    fetchTodos();
                     
-                    // 显示成功提示（可选）
                     showNotification('任务添加成功！', 'success');
-                }
-            } catch (error) {
-                console.error('添加任务失败:', error);
-                showNotification('添加任务失败，请重试', 'error');
-            }
-        });
-
-        // 获取所有任务
-        async function fetchTodos() {
-            try {
-                const response = await fetch(`${API_BASE}/getAllTodos`);
-                const data = await response.json();
-                
-                // 确保todos是数组
-                const todos = Array.isArray(data) ? data : [];
-
-                // 清空任务容器
-                todosContainer.innerHTML = '';
-
-                if (todos.length === 0) {
-                    todosContainer.innerHTML = `
-                        <div class="empty-state">
-                            <h3>暂无任务</h3>
-                            <p>点击上方的"添加任务"按钮创建你的第一个任务</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                // 对任务进行排序
-                const sortedTodos = sortTodos(todos, sortSelect.value);
-                
-                // 添加每个任务到容器
-                sortedTodos.forEach(todo => {
-                    const todoCard = createTodoCard(todo);
-                    todosContainer.appendChild(todoCard);
-                });
-            } catch (error) {
-                console.error('获取任务失败:', error);
-                todosContainer.innerHTML = `
-                    <div class="empty-state">
-                        <h3>加载失败</h3>
-                        <p>无法获取任务列表，请刷新页面重试</p>
-                    </div>
-                `;
-            }
-        }
-
-        // 创建任务卡片
-        function createTodoCard(todo) {
-            const card = document.createElement('div');
-            card.className = 'todo-card';
-            card.dataset.id = todo.id;
-
-            const isCompleted = todo.completed || false;
-
-            card.innerHTML = `
-                <div class="todo-header">
-                    <h3 class="todo-title">
-                        <input type="checkbox" class="checkbox" ${isCompleted ? 'checked' : ''}>
-                        <span class="${isCompleted ? 'completed' : ''}">${escapeHtml(todo.name)}</span>
-                    </h3>
-                    <div class="todo-actions">
-                        <button class="btn btn-secondary btn-sm edit-btn">编辑</button>
-                        <button class="btn btn-danger btn-sm delete-btn">删除</button>
-                    </div>
-                </div>
-                <p class="todo-description">${escapeHtml(todo.description || '无描述')}</p>
-                <div class="todo-meta">
-                    ${todo.createAt ? `<small class="todo-meta-item">创建时间: ${escapeHtml(todo.createAt)}</small>` : ''}
-                    ${todo.deadLine ? `<small class="todo-meta-item deadline">截止时间: ${escapeHtml(formatDateTime(todo.deadLine))}</small>` : ''}
-                    ${todo.category ? `<small class="todo-meta-item category">分类: ${escapeHtml(todo.category)}</small>` : ''}
-                    ${todo.priority ? `<small class="todo-meta-item priority priority-${escapeHtml(todo.priority)}">优先级: ${escapeHtml(todo.priority)}</small>` : ''}
-                </div>
-                <div class="edit-form" style="display: none;">
-                    <div class="form-group">
-                        <input type="text" class="edit-name" value="${escapeHtml(todo.name)}">
-                    </div>
-                    <div class="form-group">
-                        <textarea class="edit-description">${escapeHtml(todo.description || '')}</textarea>
-                    </div>
-                    <div class="form-group">
-                        <input type="datetime-local" class="edit-deadline" value="${todo.deadLine ? escapeHtml(formatToDateTimeLocal(todo.deadLine)) : ''}">
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="edit-category" value="${escapeHtml(todo.category || '')}">
-                    </div>
-                    <div class="form-group">
-                        <select class="edit-priority">
-                            <option value="" ${!todo.priority ? 'selected' : ''}>请选择</option>
-                            <option value="高" ${todo.priority === '高' ? 'selected' : ''}>高</option>
-                            <option value="中" ${todo.priority === '中' ? 'selected' : ''}>中</option>
-                            <option value="低" ${todo.priority === '低' ? 'selected' : ''}>低</option>
-                        </select>
-                    </div>
-                    <div class="todo-actions">
-                        <button class="btn btn-primary btn-sm save-btn">保存</button>
-                        <button class="btn btn-secondary btn-sm cancel-btn">取消</button>
-                    </div>
-                </div>
-            `;
-
-            // 添加事件监听器
-            const checkbox = card.querySelector('.checkbox');
-            const editBtn = card.querySelector('.edit-btn');
-            const deleteBtn = card.querySelector('.delete-btn');
-            const saveBtn = card.querySelector('.save-btn');
-            const cancelBtn = card.querySelector('.cancel-btn');
-            const editForm = card.querySelector('.edit-form');
-            const todoTitle = card.querySelector('.todo-title span');
-            const todoDescription = card.querySelector('.todo-description');
-            const todoMeta = card.querySelector('.todo-meta');
-            const editNameInput = card.querySelector('.edit-name');
-            const editDescriptionInput = card.querySelector('.edit-description');
-            const editDeadlineInput = card.querySelector('.edit-deadline');
-            const editCategoryInput = card.querySelector('.edit-category');
-            const editPriorityInput = card.querySelector('.edit-priority');
-
-            // 切换完成状态
-            checkbox.addEventListener('change', async () => {
-                const completed = checkbox.checked;
-                todoTitle.classList.toggle('completed', completed);
-                
-                try {
-                    await updateTodo(todo.id, todo.name, todo.description, completed, todo.deadLine, todo.category, todo.priority);
                 } catch (error) {
-                    console.error('更新任务状态失败:', error);
-                    // 恢复原来的状态
-                    checkbox.checked = !completed;
-                    todoTitle.classList.toggle('completed', !completed);
-                    showNotification('更新任务状态失败，请重试', 'error');
+                    console.error('添加任务失败:', error);
+                    showNotification('添加任务失败，请重试', 'error');
                 }
             });
-
-            // 编辑任务
-            editBtn.addEventListener('click', () => {
-                editForm.style.display = 'block';
-            });
-
-            // 取消编辑
-            cancelBtn.addEventListener('click', () => {
-                editForm.style.display = 'none';
-            });
-
-            // 保存编辑
-            saveBtn.addEventListener('click', async () => {
-                const newName = editNameInput.value.trim();
-                const newDescription = editDescriptionInput.value.trim();
-
-                if (!newName) {
-                    showNotification('任务名称不能为空', 'error');
-                    return;
-                }
-
-                try {
-                        const newDeadline = editDeadlineInput.value;
-                        const newCategory = editCategoryInput.value.trim();
-                        const newPriority = editPriorityInput.value;
-                        
-                        await updateTodo(todo.id, newName, newDescription, isCompleted, newDeadline, newCategory, newPriority);
-                        
-                        // 更新UI
-                        todoTitle.textContent = escapeHtml(newName);
-                        todoDescription.textContent = escapeHtml(newDescription || '无描述');
-                        
-                        // 更新元数据
-                        todoMeta.innerHTML = `
-                            ${todo.createAt ? `<small class="todo-meta-item">创建时间: ${escapeHtml(todo.createAt)}</small>` : ''}
-                            ${newDeadline ? `<small class="todo-meta-item deadline">截止时间: ${escapeHtml(formatDateTime(newDeadline))}</small>` : ''}
-                            ${newCategory ? `<small class="todo-meta-item category">分类: ${escapeHtml(newCategory)}</small>` : ''}
-                            ${newPriority ? `<small class="todo-meta-item priority priority-${escapeHtml(newPriority)}">优先级: ${escapeHtml(newPriority)}</small>` : ''}
-                        `;
-                        
-                        // 更新todo对象的属性
-                        todo.name = newName;
-                        todo.description = newDescription;
-                        todo.deadLine = newDeadline;
-                        todo.category = newCategory;
-                        todo.priority = newPriority;
-                        
-                        editForm.style.display = 'none';
-                    
-                    showNotification('任务更新成功！', 'success');
-                } catch (error) {
-                    console.error('更新任务失败:', error);
-                    showNotification('更新任务失败，请重试', 'error');
-                }
-            });
-
-            // 删除任务
-            deleteBtn.addEventListener('click', async () => {
-                if (confirm('确定要删除这个任务吗？')) {
-                    try {
-                        await deleteTodo(todo.id);
-                        card.remove();
-                        
-                        if (todosContainer.children.length === 0) {
-                            todosContainer.innerHTML = `
-                                <div class="empty-state">
-                                    <h3>暂无任务</h3>
-                                    <p>点击上方的"添加任务"按钮创建你的第一个任务</p>
-                                </div>
-                            `;
-                        }
-                        
-                        showNotification('任务删除成功！', 'success');
-                    } catch (error) {
-                        console.error('删除任务失败:', error);
-                        showNotification('删除任务失败，请重试', 'error');
-                    }
-                }
-            });
-
-            return card;
         }
-
-        // 更新任务
-        async function updateTodo(id, name, description, completed, deadline = '', category = '', priority = '') {
-            try {
-                const response = await fetch(`${API_BASE}/update`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        id,
-                        name,
-                        description,
-                        completed: completed.toString(),
-                        deadline,
-                        category,
-                        priority
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error('更新失败');
-                }
-            } catch (error) {
-                console.error('更新任务出错:', error);
-                throw error;
-            }
-        }
-
-        // 删除任务
-        async function deleteTodo(id) {
-            const response = await fetch(`${API_BASE}/delete`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ id })
-            });
-
-            if (!response.ok) {
-                throw new Error('删除任务失败');
-            }
-        }
-
+        
+        // 页面加载时初始化应用
+        document.addEventListener('DOMContentLoaded', initApp);
+        
         // 显示通知（简单实现）
         function showNotification(message, type = 'info') {
             // 创建通知元素
