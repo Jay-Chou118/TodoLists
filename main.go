@@ -10,15 +10,19 @@ import (
 )
 
 func main() {
+	// 添加静态文件服务，将static文件夹映射到根路径
+	fs := http.FileServer(http.Dir("./static"))
+	http.Handle("/", fs)
 
+	// API路由
 	//create todo
-	http.HandleFunc("/create", handleCreateTodo)
+	http.HandleFunc("/api/create", handleCreateTodo)
 	//get all todos
-	http.HandleFunc("/getAllTodos", handleGetAllTodos)
+	http.HandleFunc("/api/getAllTodos", handleGetAllTodos)
 	//update
-	http.HandleFunc("/update", handleUpdateTodo)
+	http.HandleFunc("/api/update", handleUpdateTodo)
 	//delete
-	http.HandleFunc("/delete", handleDeleteTodo)
+	http.HandleFunc("/api/delete", handleDeleteTodo)
 
 	log.Println("Server starting on :8080")
 

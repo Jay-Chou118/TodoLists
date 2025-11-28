@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo Lists</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --primary-dark: #45a049;
+            --secondary-color: #2196F3;
+            --text-color: #333;
+            --text-light: #666;
+            --background-color: #f5f5f5;
+            --card-background: #fff;
+            --border-color: #ddd;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .create-todo {
+            background-color: var(--card-background);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #1976D2;
+        }
+
+        .btn-danger {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #d32f2f;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.9rem;
+        }
+
+        .todos-list {
+            margin-top: 30px;
+        }
+
+        .todo-card {
+            background-color: var(--card-background);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 15px;
+            transition: var(--transition);
+        }
+
+        .todo-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .todo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .todo-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .todo-description {
+            color: var(--text-light);
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .todo-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: var(--text-light);
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .edit-form {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .todo-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .todo-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Todo Lists</h1>
+            <p class="subtitle">简单高效的任务管理工具</p>
+        </header>
+
+        <section class="create-todo">
+            <h2>添加新任务</h2>
+            <form id="create-form">
+                <div class="form-group">
+                    <label for="todo-name">任务名称</label>
+                    <input type="text" id="todo-name" placeholder="输入任务名称" required>
+                </div>
+                <div class="form-group">
+                    <label for="todo-description">任务描述</label>
+                    <textarea id="todo-description" placeholder="输入任务描述（可选）"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">添加任务</button>
+            </form>
+        </section>
+
+        <section class="todos-list">
+            <h2>任务列表</h2>
+            <div id="todos-container">
+                <div class="empty-state">
+                    <h3>暂无任务</h3>
+                    <p>点击上方的"添加任务"按钮创建你的第一个任务</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // DOM元素
+        const createForm = document.getElementById('create-form');
+        const todosContainer = document.getElementById('todos-container');
+        const todoNameInput = document.getElementById('todo-name');
+        const todoDescriptionInput = document.getElementById('todo-description');
+
+        // API基础URL
+        const API_BASE = 'http://localhost:8080/api';
+
+        // 页面加载时获取所有任务
+        document.addEventListener('DOMContentLoaded', fetchTodos);
+
+        // 添加新任务
+        createForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = todoNameInput.value.trim();
+            const description = todoDescriptionInput.value.trim();
+
+            if (!name) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name,
+                        description
+                    })
+                });
+
+                if (response.ok) {
+                    // 清空表单
+                    todoNameInput.value = '';
+                    todoDescriptionInput.value = '';
+                    // 重新获取任务列表
+                    fetchTodos();
+                    
+                    // 显示成功提示（可选）
+                    showNotification('任务添加成功！', 'success');
+                }
+            } catch (error) {
+                console.error('添加任务失败:', error);
+                showNotification('添加任务失败，请重试', 'error');
+            }
+        });
+
+        // 获取所有任务
+        async function fetchTodos() {
+            try {
+                const response = await fetch(`${API_BASE}/getAllTodos`);
+                const todos = await response.json();
+
+                // 清空任务容器
+                todosContainer.innerHTML = '';
+
+                if (todos.length === 0) {
+                    todosContainer.innerHTML = `
+                        <div class="empty-state">
+                            <h3>暂无任务</h3>
+                            <p>点击上方的"添加任务"按钮创建你的第一个任务</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // 添加每个任务到容器
+                todos.forEach(todo => {
+                    const todoCard = createTodoCard(todo);
+                    todosContainer.appendChild(todoCard);
+                });
+            } catch (error) {
+                console.error('获取任务失败:', error);
+                todosContainer.innerHTML = `
+                    <div class="empty-state">
+                        <h3>加载失败</h3>
+                        <p>无法获取任务列表，请刷新页面重试</p>
+                    </div>
+                `;
+            }
+        }
+
+        // 创建任务卡片
+        function createTodoCard(todo) {
+            const card = document.createElement('div');
+            card.className = 'todo-card';
+            card.dataset.id = todo.id;
+
+            const isCompleted = todo.completed || false;
+
+            card.innerHTML = `
+                <div class="todo-header">
+                    <h3 class="todo-title">
+                        <input type="checkbox" class="checkbox" ${isCompleted ? 'checked' : ''}>
+                        <span class="${isCompleted ? 'completed' : ''}">${escapeHtml(todo.name)}</span>
+                    </h3>
+                    <div class="todo-actions">
+                        <button class="btn btn-secondary btn-sm edit-btn">编辑</button>
+                        <button class="btn btn-danger btn-sm delete-btn">删除</button>
+                    </div>
+                </div>
+                <p class="todo-description">${escapeHtml(todo.description || '无描述')}</p>
+                <div class="edit-form" style="display: none;">
+                    <div class="form-group">
+                        <input type="text" class="edit-name" value="${escapeHtml(todo.name)}">
+                    </div>
+                    <div class="form-group">
+                        <textarea class="edit-description">${escapeHtml(todo.description || '')}</textarea>
+                    </div>
+                    <div class="todo-actions">
+                        <button class="btn btn-primary btn-sm save-btn">保存</button>
+                        <button class="btn btn-secondary btn-sm cancel-btn">取消</button>
+                    </div>
+                </div>
+            `;
+
+            // 添加事件监听器
+            const checkbox = card.querySelector('.checkbox');
+            const editBtn = card.querySelector('.edit-btn');
+            const deleteBtn = card.querySelector('.delete-btn');
+            const saveBtn = card.querySelector('.save-btn');
+            const cancelBtn = card.querySelector('.cancel-btn');
+            const editForm = card.querySelector('.edit-form');
+            const todoTitle = card.querySelector('.todo-title span');
+            const todoDescription = card.querySelector('.todo-description');
+            const editNameInput = card.querySelector('.edit-name');
+            const editDescriptionInput = card.querySelector('.edit-description');
+
+            // 切换完成状态
+            checkbox.addEventListener('change', async () => {
+                const completed = checkbox.checked;
+                todoTitle.classList.toggle('completed', completed);
+                
+                try {
+                    await updateTodo(todo.id, todo.name, todo.description, completed);
+                } catch (error) {
+                    console.error('更新任务状态失败:', error);
+                    // 恢复原来的状态
+                    checkbox.checked = !completed;
+                    todoTitle.classList.toggle('completed', !completed);
+                    showNotification('更新任务状态失败，请重试', 'error');
+                }
+            });
+
+            // 编辑任务
+            editBtn.addEventListener('click', () => {
+                editForm.style.display = 'block';
+            });
+
+            // 取消编辑
+            cancelBtn.addEventListener('click', () => {
+                editForm.style.display = 'none';
+            });
+
+            // 保存编辑
+            saveBtn.addEventListener('click', async () => {
+                const newName = editNameInput.value.trim();
+                const newDescription = editDescriptionInput.value.trim();
+
+                if (!newName) {
+                    showNotification('任务名称不能为空', 'error');
+                    return;
+                }
+
+                try {
+                    await updateTodo(todo.id, newName, newDescription, isCompleted);
+                    
+                    // 更新UI
+                    todoTitle.textContent = escapeHtml(newName);
+                    todoDescription.textContent = escapeHtml(newDescription || '无描述');
+                    editForm.style.display = 'none';
+                    
+                    showNotification('任务更新成功！', 'success');
+                } catch (error) {
+                    console.error('更新任务失败:', error);
+                    showNotification('更新任务失败，请重试', 'error');
+                }
+            });
+
+            // 删除任务
+            deleteBtn.addEventListener('click', async () => {
+                if (confirm('确定要删除这个任务吗？')) {
+                    try {
+                        await deleteTodo(todo.id);
+                        card.remove();
+                        
+                        if (todosContainer.children.length === 0) {
+                            todosContainer.innerHTML = `
+                                <div class="empty-state">
+                                    <h3>暂无任务</h3>
+                                    <p>点击上方的"添加任务"按钮创建你的第一个任务</p>
+                                </div>
+                            `;
+                        }
+                        
+                        showNotification('任务删除成功！', 'success');
+                    } catch (error) {
+                        console.error('删除任务失败:', error);
+                        showNotification('删除任务失败，请重试', 'error');
+                    }
+                }
+            });
+
+            return card;
+        }
+
+        // 更新任务
+        async function updateTodo(id, name, description, completed) {
+            const response = await fetch(`${API_BASE}/update`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id,
+                    name,
+                    description,
+                    completed: completed.toString()
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('更新任务失败');
+            }
+        }
+
+        // 删除任务
+        async function deleteTodo(id) {
+            const response = await fetch(`${API_BASE}/delete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id })
+            });
+
+            if (!response.ok) {
+                throw new Error('删除任务失败');
+            }
+        }
+
+        // 显示通知（简单实现）
+        function showNotification(message, type = 'info') {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.padding = '15px 20px';
+            notification.style.borderRadius = '4px';
+            notification.style.color = 'white';
+            notification.style.fontWeight = '500';
+            notification.style.zIndex = '10000';
+            notification.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+            notification.style.transition = 'all 0.3s ease';
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateY(-20px)';
+
+            // 设置不同类型的样式
+            if (type === 'success') {
+                notification.style.backgroundColor = '#4CAF50';
+            } else if (type === 'error') {
+                notification.style.backgroundColor = '#f44336';
+            } else {
+                notification.style.backgroundColor = '#2196F3';
+            }
+
+            // 添加到页面
+            document.body.appendChild(notification);
+
+            // 显示通知
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateY(0)';
+            }, 10);
+
+            // 自动关闭
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // HTML转义函数，防止XSS攻击
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
