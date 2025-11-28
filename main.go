@@ -1,23 +1,24 @@
 package main
 
 import (
-	"github.com/google/uuid"
+	"TodoLists/db"
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 func main() {
 
 	//create todo
-	http.HandleFunc("/create",handleCreateTodo)
+	http.HandleFunc("/create", handleCreateTodo)
 	//get all todos
-	http.HandleFunc("/getAllTodos",handleGetAllTodos)
+	http.HandleFunc("/getAllTodos", handleGetAllTodos)
 	//update
-	http.HandleFunc("/update",handleUpdateTodo)
+	http.HandleFunc("/update", handleUpdateTodo)
 	//delete
-	http.HandleFunc("/delete",handleDeleteTodo)
-
+	http.HandleFunc("/delete", handleDeleteTodo)
 
 	log.Println("Server starting on :8080")
 
@@ -25,8 +26,7 @@ func main() {
 
 }
 
-
-func handleCreateTodo(w http.ResponseWriter, r *http.Request){
+func handleCreateTodo(w http.ResponseWriter, r *http.Request) {
 	//1.读取前端数据
 	params := map[string]string{}
 
@@ -42,10 +42,9 @@ func handleCreateTodo(w http.ResponseWriter, r *http.Request){
 	name := params["name"]
 	description := params["description"]
 
-
 	//4.生成ID
-	id := uuid.New().string()
-	var newTodo db.Tdoo = db.Todo{
+	id := uuid.New().String()
+	var newTodo db.Todo = db.Todo{
 		ID:          id,
 		Name:        name,
 		Description: description,
@@ -60,19 +59,19 @@ func handleCreateTodo(w http.ResponseWriter, r *http.Request){
 	w.WriteHeader(http.StatusOK)
 }
 
-func handleGetAllTodos (w http.ResponseWriter, r *http.Request){
+func handleGetAllTodos(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	log.Println("handleGetAllTodos: ",db.Todos)
-	json.NewDecoder(w).Encode(db.Todos)
+	log.Println("handleGetAllTodos: ", db.Todos)
+	json.NewEncoder(w).Encode(db.Todos)
 }
 
-func handleUpdateTodo (w http.ResponseWriter, r *http.Request){
+func handleUpdateTodo(w http.ResponseWriter, r *http.Request) {
 
 	params := map[string]string{}
 	err := json.NewDecoder(r.Body).Decode(&params)
-	if err != nil{
+	if err != nil {
 		log.Fatal(err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -83,11 +82,11 @@ func handleUpdateTodo (w http.ResponseWriter, r *http.Request){
 	description := params["description"]
 	completed := params["completed"]
 
-	for i, todo := range db.Todos{
-		if todo.ID  == id {
+	for i, todo := range db.Todos {
+		if todo.ID == id {
 			db.Todos[i].Name = name
 			db.Todos[i].Description = description
-			db.Todo[i].Completed = completed == "true"
+			db.Todos[i].Completed = completed == "true"
 			break
 		}
 	}
@@ -96,11 +95,11 @@ func handleUpdateTodo (w http.ResponseWriter, r *http.Request){
 
 }
 
-func handleDeleteTodo (w http.ResponseWriter, r *http.Request){
+func handleDeleteTodo(w http.ResponseWriter, r *http.Request) {
 
 	params := map[string]string{}
 	err := json.NewDecoder(r.Body).Decode(&params)
-	if err != nil{
+	if err != nil {
 		log.Fatal(err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -108,9 +107,9 @@ func handleDeleteTodo (w http.ResponseWriter, r *http.Request){
 
 	id := params["id"]
 
-	for i, todo := range db.Todos{
-		if todo.ID == id{
-			db.Todos = append(db.Todos[:i],db.Todos[i+!:]...)
+	for i, todo := range db.Todos {
+		if todo.ID == id {
+			db.Todos = append(db.Todos[:i], db.Todos[i+1:]...)
 			break
 		}
 	}
