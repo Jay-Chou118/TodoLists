@@ -73,25 +73,93 @@
         }
 
         input[type="text"],
-        textarea {
+        input[type="datetime-local"],
+        textarea,
+        select {
             width: 100%;
             padding: 10px;
             border: 1px solid var(--border-color);
             border-radius: 4px;
             font-size: 1rem;
             transition: var(--transition);
+            background-color: white;
+            font-family: inherit;
         }
 
         input[type="text"]:focus,
-        textarea:focus {
+        input[type="datetime-local"]:focus,
+        textarea:focus,
+        select:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
         }
+        
+        /* 美化下拉框样式 */
+        select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="%23666" stroke-width="2" d="M6 9l6 6 6-6"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+            cursor: pointer;
+        }
+        
+        select:hover {
+            border-color: var(--primary-color);
+        }
+        
+        /* 为日期时间选择器添加特殊样式 */
+        input[type="datetime-local"] {
+            cursor: text;
+        }
+        
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            filter: invert(0.5) sepia(1) saturate(5) hue-rotate(90deg);
+        }
+        
+        /* 优化移动端样式 */
+        @media (max-width: 600px) {
+            input[type="text"],
+            input[type="datetime-local"],
+            textarea,
+            select {
+                font-size: 16px; /* 防止iOS缩放 */
+            }
+        }
 
+        /* 文本区域特殊样式 */
         textarea {
             resize: vertical;
             min-height: 80px;
+            line-height: 1.5;
+        }
+        
+        /* 表单布局优化 */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        /* 调整按钮样式 */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px; /* 稍微大一点的圆角 */
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
         }
 
         .btn {
@@ -154,6 +222,28 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .sort-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sort-controls select {
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--background);
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+        
         .todo-header {
             display: flex;
             justify-content: space-between;
@@ -204,6 +294,50 @@
             font-size: 1.2rem;
         }
 
+        .todo-meta {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .todo-meta-item {
+            padding: 4px 8px;
+            background-color: var(--secondary-bg);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .todo-meta-item.deadline {
+            background-color: #fff5e6;
+            color: #e67e22;
+        }
+        
+        .todo-meta-item.category {
+            background-color: #e6f7ff;
+            color: #1890ff;
+        }
+        
+        .todo-meta-item.priority {
+            font-weight: 500;
+        }
+        
+        .todo-meta-item.priority-high {
+            background-color: #fff2f0;
+            color: #ff4d4f;
+        }
+        
+        .todo-meta-item.priority-中 {
+            background-color: #fff7e6;
+            color: #fa8c16;
+        }
+        
+        .todo-meta-item.priority-低 {
+            background-color: #f6ffed;
+            color: #52c41a;
+        }
+        
         .edit-form {
             margin-top: 15px;
             padding-top: 15px;
@@ -250,12 +384,40 @@
                     <label for="todo-description">任务描述</label>
                     <textarea id="todo-description" placeholder="输入任务描述（可选）"></textarea>
                 </div>
+                <div class="form-group">
+                    <label for="todo-deadline">截止时间</label>
+                    <input type="datetime-local" id="todo-deadline">
+                </div>
+                <div class="form-group">
+                    <label for="todo-category">任务分类</label>
+                    <input type="text" id="todo-category" placeholder="如：工作、学习、生活等">
+                </div>
+                <div class="form-group">
+                    <label for="todo-priority">优先级</label>
+                    <select id="todo-priority">
+                        <option value="">请选择</option>
+                        <option value="高">高</option>
+                        <option value="中">中</option>
+                        <option value="低">低</option>
+                    </select>
+                </div>
                 <button type="submit" class="btn btn-primary">添加任务</button>
             </form>
         </section>
 
         <section class="todos-list">
-            <h2>任务列表</h2>
+            <div class="section-header">
+                <h2>任务列表</h2>
+                <div class="sort-controls">
+                    <label for="sort-select">排序方式：</label>
+                    <select id="sort-select">
+                        <option value="default">默认（创建时间）</option>
+                        <option value="priority">按优先级</option>
+                        <option value="deadline">按截止时间</option>
+                        <option value="category">按分类</option>
+                    </select>
+                </div>
+            </div>
             <div id="todos-container">
                 <div class="empty-state">
                     <h3>暂无任务</h3>
@@ -267,16 +429,141 @@
 
     <script>
         // DOM元素
-        const createForm = document.getElementById('create-form');
-        const todosContainer = document.getElementById('todos-container');
-        const todoNameInput = document.getElementById('todo-name');
-        const todoDescriptionInput = document.getElementById('todo-description');
+            const createForm = document.getElementById('create-form');
+            const todosContainer = document.getElementById('todos-container');
+            const todoNameInput = document.getElementById('todo-name');
+            const todoDescriptionInput = document.getElementById('todo-description');
+            const todoDeadlineInput = document.getElementById('todo-deadline');
+            const todoCategoryInput = document.getElementById('todo-category');
+            const todoPriorityInput = document.getElementById('todo-priority');
+            const sortSelect = document.getElementById('sort-select');
 
         // API基础URL
         const API_BASE = 'http://localhost:8080/api';
 
+        // 格式化日期时间为可读格式
+        function formatDateTime(dateTimeString) {
+            if (!dateTimeString) return '';
+            
+            // 处理不同格式的日期时间字符串
+            let date;
+            if (dateTimeString.includes('T')) {
+                // ISO 8601格式 (datetime-local input)
+                date = new Date(dateTimeString);
+            } else {
+                // 尝试解析其他格式
+                date = new Date(dateTimeString);
+            }
+            
+            if (isNaN(date.getTime())) return dateTimeString;
+            
+            return date.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // 任务排序函数
+        function sortTodos(todos, sortBy) {
+            const sorted = [...todos];
+            
+            switch (sortBy) {
+                case 'priority':
+                    // 优先级排序：高 > 中 > 低 > 空
+                    const priorityOrder = {'高': 3, '中': 2, '低': 1, '': 0};
+                    sorted.sort((a, b) => {
+                        // 先按完成状态排序（未完成在前）
+                        if (a.completed !== b.completed) {
+                            return a.completed ? 1 : -1;
+                        }
+                        // 再按优先级排序
+                        return priorityOrder[b.priority] - priorityOrder[a.priority];
+                    });
+                    break;
+                
+                case 'deadline':
+                    // 截止时间排序：有截止时间的在前，按时间升序
+                    sorted.sort((a, b) => {
+                        // 先按完成状态排序（未完成在前）
+                        if (a.completed !== b.completed) {
+                            return a.completed ? 1 : -1;
+                        }
+                        // 有截止时间的排在前面
+                        if (a.deadLine && !b.deadLine) return -1;
+                        if (!a.deadLine && b.deadLine) return 1;
+                        // 都有截止时间时，按时间先后排序
+                        if (a.deadLine && b.deadLine) {
+                            return new Date(a.deadLine) - new Date(b.deadLine);
+                        }
+                        return 0;
+                    });
+                    break;
+                
+                case 'category':
+                    // 按分类排序
+                    sorted.sort((a, b) => {
+                        // 先按完成状态排序（未完成在前）
+                        if (a.completed !== b.completed) {
+                            return a.completed ? 1 : -1;
+                        }
+                        // 有分类的排在前面
+                        if (a.category && !b.category) return -1;
+                        if (!a.category && b.category) return 1;
+                        // 都有分类时，按字母顺序排序
+                        if (a.category && b.category) {
+                            return a.category.localeCompare(b.category);
+                        }
+                        return 0;
+                    });
+                    break;
+                
+                default:
+                    // 默认排序：按创建时间降序（最新的在前）
+                    sorted.sort((a, b) => {
+                        // 先按完成状态排序（未完成在前）
+                        if (a.completed !== b.completed) {
+                            return a.completed ? 1 : -1;
+                        }
+                        // 再按创建时间排序（如果有）
+                        if (a.createAt && b.createAt) {
+                            return new Date(b.createAt) - new Date(a.createAt);
+                        }
+                        return 0;
+                    });
+            }
+            
+            return sorted;
+        }
+        
+        // 将日期时间格式化为datetime-local输入格式
+        function formatToDateTimeLocal(dateTimeString) {
+            if (!dateTimeString) return '';
+            
+            let date;
+            if (dateTimeString.includes('T')) {
+                date = new Date(dateTimeString);
+            } else {
+                // 尝试解析后端格式
+                date = new Date(dateTimeString);
+            }
+            
+            if (isNaN(date.getTime())) return '';
+            
+            // 转换为ISO字符串并截断到秒
+            return date.toISOString().slice(0, 16);
+        }
+
         // 页面加载时获取所有任务
-        document.addEventListener('DOMContentLoaded', fetchTodos);
+            document.addEventListener('DOMContentLoaded', fetchTodos);
+            
+            // 排序选择器变化时重新排序显示
+            sortSelect.addEventListener('change', () => {
+                // 重新获取任务并排序
+                fetchTodos();
+            });
 
         // 添加新任务
         createForm.addEventListener('submit', async (e) => {
@@ -295,7 +582,10 @@
                     },
                     body: JSON.stringify({
                         name,
-                        description
+                        description,
+                        deadline: todoDeadlineInput.value,
+                        category: todoCategoryInput.value.trim(),
+                        priority: todoPriorityInput.value
                     })
                 });
 
@@ -303,6 +593,9 @@
                     // 清空表单
                     todoNameInput.value = '';
                     todoDescriptionInput.value = '';
+                    todoDeadlineInput.value = '';
+                    todoCategoryInput.value = '';
+                    todoPriorityInput.value = '';
                     // 重新获取任务列表
                     fetchTodos();
                     
@@ -319,7 +612,10 @@
         async function fetchTodos() {
             try {
                 const response = await fetch(`${API_BASE}/getAllTodos`);
-                const todos = await response.json();
+                const data = await response.json();
+                
+                // 确保todos是数组
+                const todos = Array.isArray(data) ? data : [];
 
                 // 清空任务容器
                 todosContainer.innerHTML = '';
@@ -334,8 +630,11 @@
                     return;
                 }
 
+                // 对任务进行排序
+                const sortedTodos = sortTodos(todos, sortSelect.value);
+                
                 // 添加每个任务到容器
-                todos.forEach(todo => {
+                sortedTodos.forEach(todo => {
                     const todoCard = createTodoCard(todo);
                     todosContainer.appendChild(todoCard);
                 });
@@ -370,12 +669,32 @@
                     </div>
                 </div>
                 <p class="todo-description">${escapeHtml(todo.description || '无描述')}</p>
+                <div class="todo-meta">
+                    ${todo.createAt ? `<small class="todo-meta-item">创建时间: ${escapeHtml(todo.createAt)}</small>` : ''}
+                    ${todo.deadLine ? `<small class="todo-meta-item deadline">截止时间: ${escapeHtml(formatDateTime(todo.deadLine))}</small>` : ''}
+                    ${todo.category ? `<small class="todo-meta-item category">分类: ${escapeHtml(todo.category)}</small>` : ''}
+                    ${todo.priority ? `<small class="todo-meta-item priority priority-${escapeHtml(todo.priority)}">优先级: ${escapeHtml(todo.priority)}</small>` : ''}
+                </div>
                 <div class="edit-form" style="display: none;">
                     <div class="form-group">
                         <input type="text" class="edit-name" value="${escapeHtml(todo.name)}">
                     </div>
                     <div class="form-group">
                         <textarea class="edit-description">${escapeHtml(todo.description || '')}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <input type="datetime-local" class="edit-deadline" value="${todo.deadLine ? escapeHtml(formatToDateTimeLocal(todo.deadLine)) : ''}">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="edit-category" value="${escapeHtml(todo.category || '')}">
+                    </div>
+                    <div class="form-group">
+                        <select class="edit-priority">
+                            <option value="" ${!todo.priority ? 'selected' : ''}>请选择</option>
+                            <option value="高" ${todo.priority === '高' ? 'selected' : ''}>高</option>
+                            <option value="中" ${todo.priority === '中' ? 'selected' : ''}>中</option>
+                            <option value="低" ${todo.priority === '低' ? 'selected' : ''}>低</option>
+                        </select>
                     </div>
                     <div class="todo-actions">
                         <button class="btn btn-primary btn-sm save-btn">保存</button>
@@ -393,8 +712,12 @@
             const editForm = card.querySelector('.edit-form');
             const todoTitle = card.querySelector('.todo-title span');
             const todoDescription = card.querySelector('.todo-description');
+            const todoMeta = card.querySelector('.todo-meta');
             const editNameInput = card.querySelector('.edit-name');
             const editDescriptionInput = card.querySelector('.edit-description');
+            const editDeadlineInput = card.querySelector('.edit-deadline');
+            const editCategoryInput = card.querySelector('.edit-category');
+            const editPriorityInput = card.querySelector('.edit-priority');
 
             // 切换完成状态
             checkbox.addEventListener('change', async () => {
@@ -402,7 +725,7 @@
                 todoTitle.classList.toggle('completed', completed);
                 
                 try {
-                    await updateTodo(todo.id, todo.name, todo.description, completed);
+                    await updateTodo(todo.id, todo.name, todo.description, completed, todo.deadLine, todo.category, todo.priority);
                 } catch (error) {
                     console.error('更新任务状态失败:', error);
                     // 恢复原来的状态
@@ -433,12 +756,32 @@
                 }
 
                 try {
-                    await updateTodo(todo.id, newName, newDescription, isCompleted);
-                    
-                    // 更新UI
-                    todoTitle.textContent = escapeHtml(newName);
-                    todoDescription.textContent = escapeHtml(newDescription || '无描述');
-                    editForm.style.display = 'none';
+                        const newDeadline = editDeadlineInput.value;
+                        const newCategory = editCategoryInput.value.trim();
+                        const newPriority = editPriorityInput.value;
+                        
+                        await updateTodo(todo.id, newName, newDescription, isCompleted, newDeadline, newCategory, newPriority);
+                        
+                        // 更新UI
+                        todoTitle.textContent = escapeHtml(newName);
+                        todoDescription.textContent = escapeHtml(newDescription || '无描述');
+                        
+                        // 更新元数据
+                        todoMeta.innerHTML = `
+                            ${todo.createAt ? `<small class="todo-meta-item">创建时间: ${escapeHtml(todo.createAt)}</small>` : ''}
+                            ${newDeadline ? `<small class="todo-meta-item deadline">截止时间: ${escapeHtml(formatDateTime(newDeadline))}</small>` : ''}
+                            ${newCategory ? `<small class="todo-meta-item category">分类: ${escapeHtml(newCategory)}</small>` : ''}
+                            ${newPriority ? `<small class="todo-meta-item priority priority-${escapeHtml(newPriority)}">优先级: ${escapeHtml(newPriority)}</small>` : ''}
+                        `;
+                        
+                        // 更新todo对象的属性
+                        todo.name = newName;
+                        todo.description = newDescription;
+                        todo.deadLine = newDeadline;
+                        todo.category = newCategory;
+                        todo.priority = newPriority;
+                        
+                        editForm.style.display = 'none';
                     
                     showNotification('任务更新成功！', 'success');
                 } catch (error) {
@@ -475,22 +818,30 @@
         }
 
         // 更新任务
-        async function updateTodo(id, name, description, completed) {
-            const response = await fetch(`${API_BASE}/update`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    id,
-                    name,
-                    description,
-                    completed: completed.toString()
-                })
-            });
+        async function updateTodo(id, name, description, completed, deadline = '', category = '', priority = '') {
+            try {
+                const response = await fetch(`${API_BASE}/update`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id,
+                        name,
+                        description,
+                        completed: completed.toString(),
+                        deadline,
+                        category,
+                        priority
+                    })
+                });
 
-            if (!response.ok) {
-                throw new Error('更新任务失败');
+                if (!response.ok) {
+                    throw new Error('更新失败');
+                }
+            } catch (error) {
+                console.error('更新任务出错:', error);
+                throw error;
             }
         }
 
